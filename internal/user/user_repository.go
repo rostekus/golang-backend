@@ -3,7 +3,9 @@ package user
 import (
 	"context"
 	"database/sql"
-	"strconv"
+	"log"
+
+	"github.com/google/uuid"
 )
 
 type DBTX interface {
@@ -22,15 +24,14 @@ func NewRepository(db DBTX) *repository {
 }
 
 func (r *repository) CreateUser(ctx context.Context, user *User) (*User, error) {
-	var lastInsertId int
-	u := User{}
-	query := "INSERT INTO users(username, password, email) VALUES($1, $2, $3 ) returning id"
-	err := r.db.QueryRowContext(ctx, query, user.Username, user.Password, user.Email).Scan(&u.ID, &u.Email, &u.Username, &u.Password)
+	userId := uuid.New().String()
+	query := "INSERT INTO users(id, username, password, email) VALUES ($1, $2, $3, $4)"
+	_, err := r.db.ExecContext(ctx, query, userId, user.Username, user.Password, user.Email)
 	if err != nil {
-		return &User{}, err
+		log.Fatal(err)
 	}
-	user.ID = strconv.Itoa(lastInsertId)
-	return &u, nil
+	user.ID = userId
+	return user, nil
 }
 
 func (r *repository) GetUserByEmail(ctx context.Context, email string) (*User, error) {
