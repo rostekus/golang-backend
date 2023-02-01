@@ -3,7 +3,6 @@ package router
 import (
 	"rostekus/golang-backend/internal/health"
 	"rostekus/golang-backend/internal/user"
-
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -26,9 +25,11 @@ func NewRouter(userHandler *user.Handler, healthHandler *health.Handler) *gin.En
 		},
 		MaxAge: 12 * time.Hour,
 	}))
+	public := r.Group("/")
 
-	r.POST("/signup", userHandler.CreateUser)
-	r.POST("/login", userHandler.LoginUser)
-	r.GET("health", healthHandler.HealthCheck)
+	public.POST("/signup", userHandler.CreateUser)
+	public.POST("/login", userHandler.LoginUser)
+	public.GET("/health", healthHandler.HealthCheck)
+
 	return r
 }
