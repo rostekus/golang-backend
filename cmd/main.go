@@ -14,10 +14,28 @@ import (
 	"time"
 )
 
+type App struct {
+	infoLog  *log.Logger
+	errorLog *log.Logger
+}
+
 func main() {
+
+	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
+	errorLog := log.New(os.Stderr, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
+	app := App{
+		infoLog:  infoLog,
+		errorLog: errorLog,
+	}
 	dbConn, err := db.NewDatabase()
 	if err != nil {
-		log.Fatalf("could not initialize database connection: %s", err)
+		app.errorLog.Fatalf("Could not initialize database connection")
+	}
+	defer dbConn.Close()
+
+	err = dbConn.MigrateDB()
+	if err != nil {
+		app.errorLog.Fatalf("Could not migrate schema: %s", err)
 	}
 	userRepository := user.NewRepository(dbConn.GetDB())
 	userService := user.NewService(userRepository)
@@ -32,7 +50,7 @@ func main() {
 
 	go func() {
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatalf("listen: %s\n", err)
+			app.errorLog.Fatalf("Listen and Serve: %s\n", err)
 		}
 	}()
 
@@ -41,12 +59,12 @@ func main() {
 	signal.Notify(quit, syscall.SIGTERM)
 
 	<-quit
-	log.Println("Shutdown Server ...")
+	app.infoLog.Printf("Listen and Serve: %s\n", err)
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	if err := srv.Shutdown(ctx); err != nil {
-		log.Fatal("Server Shutdown:", err)
+		app.infoLog.Printf("Server Shutdown: %s\n", err)
 	}
-	log.Println("Server exiting")
+	app.infoLog.Printf("Server exiting")
 
 }
