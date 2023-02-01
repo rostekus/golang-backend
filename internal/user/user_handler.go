@@ -36,14 +36,16 @@ func (h *Handler) LoginUser(c *gin.Context) {
 	var u LoginUserRequest
 	if err := c.ShouldBindJSON(&u); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
+			"error": "Bad request",
 		})
+		return
 	}
 	res, err := h.service.LoginUser(c.Request.Context(), &u)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
+			"error": "Cannot check user info",
 		})
+		return
 	}
 	c.JSON(http.StatusOK, res)
 }
