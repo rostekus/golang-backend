@@ -3,10 +3,9 @@ package user
 import (
 	"context"
 	"os"
+	"rostekus/golang-backend/internal/auth"
 	"rostekus/golang-backend/util"
 	"time"
-
-	"github.com/golang-jwt/jwt/v4"
 )
 
 var secretKey = os.Getenv("SECRET_JWT")
@@ -31,13 +30,15 @@ func (s *service) CreateUser(ctx context.Context, req *CreateUserRequest) (*Crea
 	if err != nil {
 		return nil, err
 	}
-
 	u := &User{
 		Username: req.Username,
 		Email:    req.Email,
 		Password: hashedPassword,
 	}
-
+	err = util.CheckEmail(u.Email)
+	if err != nil {
+		return nil, err
+	}
 	r, err := s.repository.CreateUser(ctx, u)
 	if err != nil {
 		return nil, err
@@ -52,12 +53,6 @@ func (s *service) CreateUser(ctx context.Context, req *CreateUserRequest) (*Crea
 	return res, nil
 }
 
-type JWTClaims struct {
-	ID       string `json:"id"`
-	Username string `json:"username"`
-	jwt.RegisteredClaims
-}
-
 func (s *service) LoginUser(ctx context.Context, req *LoginUserRequest) (*LoginUserResponse, error) {
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
@@ -69,19 +64,9 @@ func (s *service) LoginUser(ctx context.Context, req *LoginUserRequest) (*LoginU
 	if err != nil {
 		return &LoginUserResponse{}, err
 	}
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, JWTClaims{
-		ID:       u.ID,
-		Username: u.Username,
-		RegisteredClaims: jwt.RegisteredClaims{
-			Issuer:    u.ID,
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)),
-		},
-	})
-
-	ss, err := token.SignedString([]byte(secretKey))
+	ss, err := auth.GenerateJWT(u.Email, u.Username)
 	if err != nil {
 		return &LoginUserResponse{}, err
 	}
-
 	return &LoginUserResponse{AccessToken: ss, User: u.Username}, nil
 }
