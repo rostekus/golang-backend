@@ -1,8 +1,10 @@
 package router
 
 import (
+	"net/http"
 	"rostekus/golang-backend/internal/health"
 	"rostekus/golang-backend/internal/user"
+	"rostekus/golang-backend/middleware"
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -26,10 +28,14 @@ func NewUserServiceRouter(userHandler *user.Handler, healthHandler *health.Handl
 		MaxAge: 12 * time.Hour,
 	}))
 	public := userRouter.Group("/")
-
 	public.POST("/signup", userHandler.CreateUser)
 	public.POST("/login", userHandler.LoginUser)
 	public.GET("/health", healthHandler.HealthCheck)
+
+	private := userRouter.Group("api/v1")
+	private.GET("/checkjwt", middleware.JWTAuth, func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"message": "Welcome to the private route!"})
+	})
 
 	return userRouter
 }
