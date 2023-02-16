@@ -9,12 +9,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var r *gin.Engine
+var userRouter *gin.Engine
 
-func NewRouter(userHandler *user.Handler, healthHandler *health.Handler) *gin.Engine {
-	r = gin.Default()
+func NewUserServiceRouter(userHandler *user.Handler, healthHandler *health.Handler) *gin.Engine {
+	userRouter = gin.Default()
 
-	r.Use(cors.New(cors.Config{
+	userRouter.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:3000"},
 		AllowMethods:     []string{"POST", "GET"},
 		AllowHeaders:     []string{"Origin"},
@@ -25,11 +25,11 @@ func NewRouter(userHandler *user.Handler, healthHandler *health.Handler) *gin.En
 		},
 		MaxAge: 12 * time.Hour,
 	}))
-	public := r.Group("/")
+	public := userRouter.Group("/")
 
 	public.POST("/signup", userHandler.CreateUser)
 	public.POST("/login", userHandler.LoginUser)
 	public.GET("/health", healthHandler.HealthCheck)
 
-	return r
+	return userRouter
 }
