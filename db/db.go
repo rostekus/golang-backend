@@ -19,10 +19,10 @@ type Database struct {
 }
 
 type dbConfig struct {
-	User     string `mapstructure:"DB_USER" validate:"required"`
-	Password string `mapstructure:"DB_PASS" validate:"required"`
+	User     string `mapstructure:"POSTGRES_USER" validate:"required"`
+	Password string `mapstructure:"POSTGRES_PASSWORD" validate:"required"`
 	Host     string `mapstructure:"HOST" validate:"required"`
-	Name     string `mapstructure:"DB_NAME" validate:"required"`
+	Name     string `mapstructure:"POSTGRES_DB" validate:"required"`
 	Port     string `mapstructure:"DB_PORT"`
 }
 
