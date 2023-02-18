@@ -23,7 +23,7 @@ services:
     image_service:
       build: 
         context: .
-        dockerfile: ./Dockerfile.video_post_service
+        dockerfile: ./Dockerfile.image_service
       env_file:
         - .env
       volumes:
