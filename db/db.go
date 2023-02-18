@@ -5,14 +5,9 @@ import (
 	"fmt"
 
 	"github.com/go-playground/validator/v10"
-	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 	"github.com/spf13/viper"
 )
-
-func init() {
-	godotenv.Load(".env")
-}
 
 type Database struct {
 	db *sql.DB
@@ -21,7 +16,7 @@ type Database struct {
 type dbConfig struct {
 	User     string `mapstructure:"POSTGRES_USER" validate:"required"`
 	Password string `mapstructure:"POSTGRES_PASSWORD" validate:"required"`
-	Host     string `mapstructure:"HOST" validate:"required"`
+	Host     string `mapstructure:"DB_HOST"`
 	Name     string `mapstructure:"POSTGRES_DB" validate:"required"`
 	Port     string `mapstructure:"DB_PORT"`
 }
@@ -44,6 +39,7 @@ func LoadDBConfig() (config dbConfig, err error) {
 	viper.SetConfigName(".env")
 	viper.SetConfigType("env")
 	viper.SetDefault("DB_PORT", "3306")
+	viper.SetDefault("DB_HOST", "postgres")
 	err = viper.ReadInConfig()
 	if err != nil {
 		return

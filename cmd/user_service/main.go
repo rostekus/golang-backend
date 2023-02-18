@@ -7,7 +7,13 @@ import (
 	"rostekus/golang-backend/internal/server"
 	"rostekus/golang-backend/internal/user"
 	"rostekus/golang-backend/router"
+
+	"github.com/joho/godotenv"
 )
+
+func init() {
+	godotenv.Load(".env")
+}
 
 func main() {
 	dbConn, err := db.NewDatabase()
