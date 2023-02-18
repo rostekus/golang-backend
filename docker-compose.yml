@@ -1,6 +1,6 @@
 version: '3.8'
 services:
-    golang:
+    user_service:
       build: 
         context: .
         dockerfile: ./Dockerfile.user_service
@@ -20,5 +20,29 @@ services:
         - postgres-db:/var/lib/postgresql/data
       ports:
         - '5431:5432'
+    image_service:
+      build: 
+        context: .
+        dockerfile: ./Dockerfile.image_service
+      env_file:
+        - .env
+      volumes:
+      - .:/usr/src/app
+      ports:
+        - '8081:23451'
+    rabbitmq:
+      container_name: rabbitmq
+      image: rabbitmq:3.8.9-management
+      ports:
+        - '5672:5672'
+        - '15672:15672'
+      environment:
+        - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
+        - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
+      volumes:
+        - rabbitmq-db:/var/lib/rabbitmq
 volumes:
   postgres-db:
+  rabbitmq-db:
+
+  
