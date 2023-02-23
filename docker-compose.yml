@@ -41,8 +41,23 @@ services:
         - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
       volumes:
         - rabbitmq-db:/var/lib/rabbitmq
+    
+    mongodb:
+      image: mongo
+      depends_on:
+      - image_service
+      restart: always
+      environment:
+        MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+        MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+        MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
+      ports:
+        - "27017:27017"
+      volumes:
+        - mongodb-db:/new:/data/db
 volumes:
   postgres-db:
   rabbitmq-db:
+  mongodb-db:
 
   

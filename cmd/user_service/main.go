@@ -16,7 +16,7 @@ func init() {
 }
 
 func main() {
-	dbConn, err := db.NewDatabase()
+	dbConn, err := db.NewPostgresDatabase()
 	if err != nil {
 		log.Fatalf("Could not initialize database connection")
 	}

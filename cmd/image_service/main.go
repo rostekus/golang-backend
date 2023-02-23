@@ -2,14 +2,26 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"net/http"
+	"rostekus/golang-backend/internal/image"
 	"rostekus/golang-backend/rabbitmq"
 	"rostekus/golang-backend/util"
 	"time"
+
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
+	// configPath := "config.json"
+	// config := util.ReadConfig(configPath)
+	// fmt.Println(config.QueueName)
+	// rabbitmq := rabbitmq.NewRabbitMQ()
+	// rabbitmq.CreateChannel()
+	// rabbitmq.QueueDeclare(config.QueueName)
+	// defer rabbitmq.Close()
+	router := gin.Default()
+	router.POST("/upload", image.UploadFile)
+	router.Run(":8080")
 	config := util.ReadConfig()
 	fmt.Println(config.QueueName)
 	rabbitmq := rabbitmq.NewRabbitMQ()
@@ -24,8 +36,4 @@ func main() {
 		fmt.Fprint(w, "Message published")
 	})
 
-	log.Println("Listening on :8080...")
-	if err := http.ListenAndServe(":23451", nil); err != nil {
-		log.Fatalf("Failed to start HTTP server: %v", err)
-	}
 }
