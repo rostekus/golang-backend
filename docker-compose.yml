@@ -1,0 +1,70 @@
+version: '3.8'
+services:
+    user_service:
+      build: 
+        context: .
+        dockerfile: ./Dockerfile.user_service
+      env_file:
+        - .env
+      volumes:
+      - .:/usr/src/app
+      ports:
+        - '8080:23450'
+    postgres:
+      container_name: postgresql
+      environment:
+          - POSTGRES_USER=myusername
+          - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      image: postgres
+      volumes:
+        - postgres-db:/var/lib/postgresql/data
+        - ./db/migrations/1_create_user_table.down.sql:/docker-entrypoint-initdb.d/create_tables.sql
+      ports:
+        - '5431:5432'
+      
+    rabbitmq:
+      container_name: rabbitmq
+      image: rabbitmq:3.8.9-management
+      ports:
+        - '5672:5672'
+        - '15672:15672'
+      environment:
+        - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
+        - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
+      volumes:
+        - rabbitmq-db:/var/lib/rabbitmq
+      healthcheck:
+        test: [ "CMD", "nc", "-z", "localhost", "5672" ]
+        interval: 10s
+        timeout: 10s
+        retries: 5
+
+    image_service:
+      build: 
+        context: .
+        dockerfile: ./Dockerfile.image_service
+      restart: unless-stopped
+      env_file:
+        - .env
+      volumes:
+      - .:/usr/src/app
+      ports:
+        - '8081:23451'
+
+    mongodb:
+      image: mongo
+      restart: always
+      environment:
+        MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+        MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+        MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
+      ports:
+        - "27017:27017"
+      volumes:
+        - mongodb-db:/new:/data/db
+volumes:
+  postgres-db:
+  rabbitmq-db:
+  mongodb-db:
+
+  
