@@ -19,11 +19,23 @@ func NewHandler(s *service) *Handler {
 
 func (h *Handler) UploadFile(c *gin.Context) {
 	var req ImageUploadRequest
+
 	if err := c.ShouldBind(&req); err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	res, err := h.service.UploadFileToMongoDB(&req)
+	userID := c.GetString("user_id")
+	res, err := h.service.UploadFileToMongoDB(c, &req)
+
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	}
+
+	err = h.service.InsertImageDataToDB(c, &req, userID)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	}
+	err = h.service.PublishMessage(req.File.Filename)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 	}
@@ -32,11 +44,12 @@ func (h *Handler) UploadFile(c *gin.Context) {
 
 func (h *Handler) DownloadFile(c *gin.Context) {
 	var req ImageDownloadRequest
-	if err := c.ShouldBind(&req); err != nil {
+	if err := c.BindQuery(&req); err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	fileBuffer, err := h.service.DownloadFile(&req.ImageName)
+	userID := c.MustGet("user_id").(string)
+	resp, fileBuffer, err := h.service.DownloadFile(c, &req, userID)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -48,8 +61,17 @@ func (h *Handler) DownloadFile(c *gin.Context) {
 	}
 	c.Header("Content-Type", http.DetectContentType(fileBuffer.Bytes()))
 
-	// Set the Content-Length header based on the length of the buffer
 	c.Header("Content-Length", strconv.Itoa(fileBuffer.Len()))
-	c.JSON(http.StatusOK,
-		gin.H{})
+	c.JSON(http.StatusOK, resp)
+}
+
+func (h *Handler) GetImagesForUser(c *gin.Context) {
+	userID := c.MustGet("user_id").(string)
+	images, err := h.service.GetImagesForUser(c, userID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"images": images})
 }

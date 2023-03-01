@@ -3,29 +3,25 @@ package image
 import (
 	"bytes"
 	"mime/multipart"
+	"rostekus/golang-backend/db"
 )
 
-type database interface {
-	UploadFile(fileReader multipart.File, filename string, databaseName string) error
-	DownloadFile(string, string) (*bytes.Buffer, error)
-}
-
 type repository struct {
-	db           database
+	db           *db.MongoDatabase
 	databaseName string
 }
 
-func NewRepository(db database, databaseName string) *repository {
+func NewRepository(db *db.MongoDatabase, databaseName string) *repository {
 	return &repository{
 		db:           db,
 		databaseName: databaseName,
 	}
 }
 
-func (r *repository) UploadImage(file multipart.File, filename string) error {
+func (r *repository) UploadFile(file multipart.File, filename string) error {
 	return r.db.UploadFile(file, filename, r.databaseName)
 }
 
-func (r *repository) DownloadImage(filename string) (*bytes.Buffer, error) {
+func (r *repository) DownloadFile(filename string) (*bytes.Buffer, error) {
 	return r.db.DownloadFile(filename, r.databaseName)
 }

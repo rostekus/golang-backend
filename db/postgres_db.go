@@ -19,11 +19,11 @@ type dbPostgresConfig struct {
 
 func (config *dbPostgresConfig) PostgresDSNFromConfig() string {
 
-	dns := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
-		config.Host,
-		config.Port,
+	dns := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
 		config.User,
 		config.Password,
+		config.Host,
+		config.Port,
 		config.Name,
 	)
 	return dns
@@ -34,7 +34,7 @@ func loadPostgresDBConfig() (config dbPostgresConfig, err error) {
 	viper.AddConfigPath(".")
 	viper.SetConfigName(".env")
 	viper.SetConfigType("env")
-	viper.SetDefault("POSTGRES_PORT", "3306")
+	viper.SetDefault("POSTGRES_DB_PORT", "5431")
 	err = viper.ReadInConfig()
 	if err != nil {
 		return
@@ -53,7 +53,7 @@ func loadPostgresDBConfig() (config dbPostgresConfig, err error) {
 func NewPostgresDatabase() (*PostgresDatabase, error) {
 	configDB, err := loadPostgresDBConfig()
 	if err != nil {
-		panic("Cannot load database config")
+		panic("Cannot load postgres database config")
 	}
 
 	dsn := configDB.PostgresDSNFromConfig()

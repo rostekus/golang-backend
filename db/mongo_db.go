@@ -57,7 +57,7 @@ func (configDB *dbMongoConfig) MongoURIFromConfig() string {
 func NewMongoClient(databaseName string) (*MongoDatabase, error) {
 	configDB, err := loadMongoConfig()
 	if err != nil {
-		panic("Cannot load database config")
+		panic("Cannot load mongodb database config" + err.Error())
 	}
 
 	uri := configDB.MongoURIFromConfig()
@@ -106,7 +106,8 @@ func (mongoDB *MongoDatabase) UploadFile(fileReader multipart.File, filename str
 func (mongoDB *MongoDatabase) DownloadFile(filename string, databaseName string) (*bytes.Buffer, error) {
 	db := mongoDB.client.Database(databaseName)
 	fsFiles := db.Collection("fs.files")
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 	var results bson.M
 	err := fsFiles.FindOne(ctx, bson.M{}).Decode(&results)
 	if err != nil {
@@ -114,14 +115,14 @@ func (mongoDB *MongoDatabase) DownloadFile(filename string, databaseName string)
 		return nil, err
 	}
 	// you can print out the results
-	fmt.Println(results)
+	fmt.Println(filename)
 
 	bucket, _ := gridfs.NewBucket(
 		db,
 	)
 
 	var buf bytes.Buffer
-	_, err = bucket.DownloadToStreamByName("test.png", &buf)
+	_, err = bucket.DownloadToStreamByName(filename, &buf)
 	if err != nil {
 		log.Println(err)
 		return nil, err

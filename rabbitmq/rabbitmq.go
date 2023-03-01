@@ -24,7 +24,7 @@ type rabbitMQConfig struct {
 
 func (config *rabbitMQConfig) DSNFromConfig() string {
 
-	dns := fmt.Sprintf("amqp://%s:%s@%s:%s/",
+	dns := fmt.Sprintf("amqp://%s:%s@%s:%s",
 		config.User,
 		config.Password,
 		config.Host,
@@ -62,7 +62,7 @@ func NewRabbitMQ() *RabbitMQ {
 	dns := configDB.DSNFromConfig()
 	conn, err := amqp.Dial(dns)
 	if err != nil {
-		log.Fatalf("Failed to connect to RabbitMQ server: %v", err)
+		log.Fatalf("Failed to connect to RabbitMQ server: %v, %s", err, dns)
 	}
 	return &RabbitMQ{conn: conn, ch: nil, queue: nil}
 }

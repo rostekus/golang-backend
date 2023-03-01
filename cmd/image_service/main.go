@@ -2,38 +2,53 @@ package main
 
 import (
 	"fmt"
-	"net/http"
+	"log"
+	"rostekus/golang-backend/db"
 	"rostekus/golang-backend/internal/image"
+	"rostekus/golang-backend/middleware"
 	"rostekus/golang-backend/rabbitmq"
 	"rostekus/golang-backend/util"
-	"time"
 
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	// configPath := "config.json"
-	// config := util.ReadConfig(configPath)
-	// fmt.Println(config.QueueName)
-	// rabbitmq := rabbitmq.NewRabbitMQ()
-	// rabbitmq.CreateChannel()
-	// rabbitmq.QueueDeclare(config.QueueName)
-	// defer rabbitmq.Close()
-	router := gin.Default()
-	router.POST("/upload", image.UploadFile)
-	router.Run(":8080")
+	mongo, err := db.NewMongoClient("golang")
+	if err != nil {
+		panic(err.Error())
+	}
+	log.Println("Connected to MongoDB")
+
 	config := util.ReadConfig()
 	fmt.Println(config.QueueName)
 	rabbitmq := rabbitmq.NewRabbitMQ()
 	rabbitmq.CreateChannel()
-	rabbitmq.QueueDeclare(config.QueueName)
+	rabbitmq.QueueDeclare("video_queue")
+	log.Println("Connected to RabbitMQ")
+	postgres, err := db.NewPostgresDatabase()
+	if err != nil {
+		log.Fatalf("Could not initialize database connection")
+	}
+	log.Println("Connected to Postgres")
+	defer postgres.Close()
+
+	rep := image.NewRepository(mongo, "golang")
+	srv := image.NewService(rep, rabbitmq, postgres.GetDB())
+	handler := image.NewHandler(srv)
+	router := gin.Default()
+	router.POST("/upload", middleware.JWTAuth, handler.UploadFile)
+	router.GET("/download", middleware.JWTAuth, handler.DownloadFile)
+	router.POST("/images", middleware.JWTAuth, handler.GetImagesForUser)
+	router.Run(":23451")
+
 	defer rabbitmq.Close()
 
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-		message := time.Now().String()
-		rabbitmq.Publish(message)
-		fmt.Fprint(w, "Message published")
-	})
+	// http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	// 	w.WriteHeader(http.StatusOK)
+	// 	message := time.Now().String()
+	// 	rabbitmq.Publish(message)
+	// 	fmt.Fprint(w, "Message published")
+	// })
+	// http.ListenAndServe(":23451", nil)
 
 }
