@@ -11,6 +11,10 @@ import (
 	"time"
 )
 
+type Server interface {
+	Run()
+}
+
 type server struct {
 	Server   *http.Server
 	InfoLog  *log.Logger

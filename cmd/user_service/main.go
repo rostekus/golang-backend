@@ -27,7 +27,7 @@ func main() {
 	userHadler := user.NewHandler(userService)
 	healthHandler := health.NewHandler()
 	router := router.NewUserServiceRouter(userHadler, healthHandler)
-	srv := server.NewServer("23450", router)
+	srv := server.NewServer("23450", router.Router)
 	srv.Run()
 
 }

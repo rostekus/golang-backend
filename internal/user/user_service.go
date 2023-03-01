@@ -2,13 +2,10 @@ package user
 
 import (
 	"context"
-	"os"
 	"rostekus/golang-backend/internal/auth"
 	"rostekus/golang-backend/util"
 	"time"
 )
-
-var secretKey = os.Getenv("SECRET_JWT")
 
 type service struct {
 	repository *repository
@@ -64,7 +61,7 @@ func (s *service) LoginUser(ctx context.Context, req *LoginUserRequest) (*LoginU
 	if err != nil {
 		return &LoginUserResponse{}, err
 	}
-	ss, err := auth.GenerateJWT(u.Email, u.Username)
+	ss, err := auth.GenerateJWT(u.Email, u.Username, u.ID)
 	if err != nil {
 		return &LoginUserResponse{}, err
 	}

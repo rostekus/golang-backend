@@ -2,24 +2,17 @@ package user
 
 import (
 	"context"
-	"database/sql"
 	"log"
+	"rostekus/golang-backend/db"
 
 	"github.com/google/uuid"
 )
 
-type DBTX interface {
-	ExecContext(ctx context.Context, query string, args ...interface{}) (sql.Result, error)
-	PrepareContext(context.Context, string) (*sql.Stmt, error)
-	QueryContext(context.Context, string, ...interface{}) (*sql.Rows, error)
-	QueryRowContext(context.Context, string, ...interface{}) *sql.Row
-}
-
 type repository struct {
-	db DBTX
+	db db.SQLDatabase
 }
 
-func NewRepository(db DBTX) *repository {
+func NewRepository(db db.SQLDatabase) *repository {
 	return &repository{db: db}
 }
 
