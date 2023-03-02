@@ -1,83 +1,30 @@
 package db
 
 import (
+	"context"
 	"database/sql"
-	"fmt"
+	"time"
 
-	"github.com/go-playground/validator/v10"
 	"github.com/joho/godotenv"
-	_ "github.com/lib/pq"
-	"github.com/spf13/viper"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 func init() {
 	godotenv.Load(".env")
 }
 
-type Database struct {
+type PostgresDatabase struct {
 	db *sql.DB
 }
 
-type dbConfig struct {
-	User     string `mapstructure:"POSTGRES_USER" validate:"required"`
-	Password string `mapstructure:"POSTGRES_PASSWORD" validate:"required"`
-	Host     string `mapstructure:"HOST" validate:"required"`
-	Name     string `mapstructure:"POSTGRES_DB" validate:"required"`
-	Port     string `mapstructure:"DB_PORT"`
+type MongoDatabase struct {
+	client  *mongo.Client
+	timeout time.Duration
 }
 
-func (config *dbConfig) DSNFromConfig() string {
-
-	dns := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
-		config.Host,
-		config.Port,
-		config.User,
-		config.Password,
-		config.Name,
-	)
-	return dns
-}
-
-func LoadDBConfig() (config dbConfig, err error) {
-
-	viper.AddConfigPath(".")
-	viper.SetConfigName(".env")
-	viper.SetConfigType("env")
-	viper.SetDefault("DB_PORT", "3306")
-	err = viper.ReadInConfig()
-	if err != nil {
-		return
-	}
-	err = viper.Unmarshal(&config)
-	if err != nil {
-		return
-	}
-	validate := validator.New()
-	if err = validate.Struct(&config); err != nil {
-		return
-	}
-	return
-}
-
-func NewDatabase() (*Database, error) {
-	configDB, err := LoadDBConfig()
-	if err != nil {
-		panic("Cannot load database config")
-	}
-
-	dsn := configDB.DSNFromConfig()
-	fmt.Println(dsn)
-	db, err := sql.Open("postgres", dsn)
-	if err != nil {
-		panic("Cannot connect to database")
-	}
-	return &Database{db: db}, nil
-}
-
-func (d *Database) Close() {
-	d.db.Close()
-}
-
-func (d *Database) GetDB() *sql.DB {
-	return d.db
+type SQLDatabase interface {
+	ExecContext(ctx context.Context, query string, args ...interface{}) (sql.Result, error)
+	PrepareContext(context.Context, string) (*sql.Stmt, error)
+	QueryContext(context.Context, string, ...interface{}) (*sql.Rows, error)
+	QueryRowContext(context.Context, string, ...interface{}) *sql.Row
 }

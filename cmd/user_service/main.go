@@ -7,10 +7,16 @@ import (
 	"rostekus/golang-backend/internal/server"
 	"rostekus/golang-backend/internal/user"
 	"rostekus/golang-backend/router"
+
+	"github.com/joho/godotenv"
 )
 
+func init() {
+	godotenv.Load(".env")
+}
+
 func main() {
-	dbConn, err := db.NewDatabase()
+	dbConn, err := db.NewPostgresDatabase()
 	if err != nil {
 		log.Fatalf("Could not initialize database connection")
 	}
@@ -21,7 +27,7 @@ func main() {
 	userHadler := user.NewHandler(userService)
 	healthHandler := health.NewHandler()
 	router := router.NewUserServiceRouter(userHadler, healthHandler)
-	srv := server.NewServer("23450", router)
+	srv := server.NewServer("23450", router.Router)
 	srv.Run()
 
 }

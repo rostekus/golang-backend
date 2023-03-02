@@ -10,9 +10,9 @@ type User struct {
 }
 
 type CreateUserRequest struct {
-	Email    string `json:"email"`
-	Username string `json:"username"`
-	Password string `json:"password"`
+	Email    string `json:"email"  binding:"required"`
+	Username string `json:"username"  binding:"required"`
+	Password string `json:"password"  binding:"required"`
 }
 
 type CreateUserResponse struct {
@@ -22,8 +22,8 @@ type CreateUserResponse struct {
 }
 
 type LoginUserRequest struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	Email    string `json:"email"  binding:"required"`
+	Password string `json:"password"  binding:"required"`
 }
 type LoginUserResponse struct {
 	AccessToken string `json:"token"`

@@ -1,10 +1,9 @@
 package router
 
 import (
-	"fmt"
 	"net/http"
 	"rostekus/golang-backend/internal/health"
-	"rostekus/golang-backend/internal/user"
+	"rostekus/golang-backend/internal/image"
 	"rostekus/golang-backend/middleware"
 	"time"
 
@@ -12,7 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func NewUserServiceRouter(userHandler *user.Handler, healthHandler *health.Handler) *Router {
+func NewImageServiceRouter(imageHandler *image.Handler, healthHandler *health.Handler) *Router {
 	router := gin.Default()
 
 	router.Use(cors.New(cors.Config{
@@ -27,13 +26,12 @@ func NewUserServiceRouter(userHandler *user.Handler, healthHandler *health.Handl
 		MaxAge: 12 * time.Hour,
 	}))
 	public := router.Group("/")
-	public.POST("/signup", userHandler.CreateUser)
-	public.POST("/login", userHandler.LoginUser)
-	public.GET("/health", healthHandler.HealthCheck)
+	public.POST("/upload", imageHandler.UploadFile)
+	public.POST("/download", imageHandler.DownloadFile)
 
 	private := router.Group("api/v1")
 	private.GET("/checkjwt", middleware.JWTAuth, func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf("Welcome to the private route! id: %v", c.MustGet("user_id"))})
+		c.JSON(http.StatusOK, gin.H{"message": "Welcome to the private route!"})
 	})
 
 	return &Router{Router: router}

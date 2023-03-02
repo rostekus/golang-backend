@@ -8,13 +8,14 @@ COPY go.mod .
 COPY go.sum .
 RUN go mod download
 COPY . .
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./main ./cmd/video_post_service/main.go
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./main ./cmd/image_service/main.go
 
 FROM scratch as final
 COPY --from=root /etc/passwd /etc/passwd
 COPY --from=root /etc/group /etc/group
 WORKDIR /server
 COPY --from=builder /server/.env .env
+COPY --from=builder /server/image_service_config.json config.json
 COPY --chown=1001:1001 --from=builder /server/main /main
 USER app
 ENTRYPOINT ["/main"]
