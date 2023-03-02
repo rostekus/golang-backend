@@ -2,13 +2,10 @@ package image
 
 import (
 	"mime/multipart"
-
-	"github.com/google/uuid"
 )
 
 type Image struct {
-	ID       uuid.UUID
-	Filename string
+	Filename string `json:"filename"`
 }
 
 type ImageUploadRequest struct {

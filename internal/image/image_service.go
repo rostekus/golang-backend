@@ -102,7 +102,7 @@ func (s *service) GetImagesForUser(ctx context.Context, userID string) ([]*Image
 
 	for rows.Next() {
 		var image Image
-		if err := rows.Scan(&image.ID, &image.Filename); err != nil {
+		if err := rows.Scan(&image.Filename); err != nil {
 			return nil, err
 		}
 		images = append(images, &image)

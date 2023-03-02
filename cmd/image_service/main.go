@@ -38,7 +38,7 @@ func main() {
 	router := gin.Default()
 	router.POST("/upload", middleware.JWTAuth, handler.UploadFile)
 	router.GET("/download", middleware.JWTAuth, handler.DownloadFile)
-	router.POST("/images", middleware.JWTAuth, handler.GetImagesForUser)
+	router.GET("/images", middleware.JWTAuth, handler.GetImagesForUser)
 	router.Run(":23451")
 
 	defer rabbitmq.Close()
