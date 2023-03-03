@@ -3,7 +3,7 @@ package user
 import (
 	"context"
 	"log"
-	"rostekus/golang-backend/db"
+	"rostekus/golang-backend/pkg/db"
 
 	"github.com/google/uuid"
 )

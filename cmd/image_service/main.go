@@ -3,11 +3,11 @@ package main
 import (
 	"fmt"
 	"log"
-	"rostekus/golang-backend/db"
 	"rostekus/golang-backend/internal/image"
-	"rostekus/golang-backend/middleware"
-	"rostekus/golang-backend/rabbitmq"
-	"rostekus/golang-backend/util"
+	"rostekus/golang-backend/pkg/db"
+	"rostekus/golang-backend/pkg/middleware"
+	"rostekus/golang-backend/pkg/rabbitmq"
+	"rostekus/golang-backend/pkg/util"
 
 	"github.com/gin-gonic/gin"
 )

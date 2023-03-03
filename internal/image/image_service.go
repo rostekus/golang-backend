@@ -6,8 +6,8 @@ import (
 	"database/sql"
 	"fmt"
 	"mime/multipart"
-	"rostekus/golang-backend/db"
-	"rostekus/golang-backend/rabbitmq"
+	"rostekus/golang-backend/pkg/db"
+	"rostekus/golang-backend/pkg/rabbitmq"
 	"time"
 
 	"github.com/google/uuid"

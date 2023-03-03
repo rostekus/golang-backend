@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"rostekus/golang-backend/internal/health"
 	"rostekus/golang-backend/internal/user"
-	"rostekus/golang-backend/middleware"
+	"rostekus/golang-backend/pkg/middleware"
 	"time"
 
 	"github.com/gin-contrib/cors"
