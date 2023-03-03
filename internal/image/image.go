@@ -8,6 +8,11 @@ type Image struct {
 	Filename string `json:"filename"`
 }
 
+type ImageMessage struct {
+	ImageName string `json:"image_name"`
+	UserID    string `json:"user_id"`
+}
+
 type ImageUploadRequest struct {
 	File *multipart.FileHeader `form:"file" binding:"required"`
 }

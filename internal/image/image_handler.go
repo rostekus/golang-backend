@@ -35,7 +35,11 @@ func (h *Handler) UploadFile(c *gin.Context) {
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 	}
-	err = h.service.PublishMessage(req.File.Filename)
+	imageMessage := ImageMessage{
+		ImageName: req.File.Filename,
+		UserID:    userID,
+	}
+	err = h.service.PublishMessage(imageMessage)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 	}
