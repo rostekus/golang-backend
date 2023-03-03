@@ -2,11 +2,11 @@ package main
 
 import (
 	"log"
-	"rostekus/golang-backend/db"
 	"rostekus/golang-backend/internal/health"
+	"rostekus/golang-backend/internal/router"
 	"rostekus/golang-backend/internal/server"
 	"rostekus/golang-backend/internal/user"
-	"rostekus/golang-backend/router"
+	"rostekus/golang-backend/pkg/db"
 
 	"github.com/joho/godotenv"
 )

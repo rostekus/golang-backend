@@ -3,7 +3,7 @@ package user
 import (
 	"context"
 	"rostekus/golang-backend/internal/auth"
-	"rostekus/golang-backend/util"
+	"rostekus/golang-backend/pkg/util"
 	"time"
 )
 

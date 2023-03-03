@@ -3,7 +3,7 @@ package image
 import (
 	"bytes"
 	"mime/multipart"
-	"rostekus/golang-backend/db"
+	"rostekus/golang-backend/pkg/db"
 )
 
 type repository struct {
