@@ -29,19 +29,22 @@ func (h *Handler) UploadFile(c *gin.Context) {
 
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
 
-	err = h.service.InsertImageDataToDB(c, &req, userID)
+	err = h.service.InsertImageDataToDB(c, &req, userID, res.ImageID)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
 	imageMessage := ImageMessage{
-		ImageName: req.File.Filename,
-		UserID:    userID,
+		ImageID: res.ImageID,
+		UserID:  userID,
 	}
 	err = h.service.PublishMessage(imageMessage)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
 	c.JSON(http.StatusOK, res)
 }

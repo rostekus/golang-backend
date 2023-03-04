@@ -64,9 +64,8 @@ func (s *service) PublishMessage(imageMessage ImageMessage) error {
 	return s.publisher.Publish(body)
 }
 
-func (s *service) InsertImageDataToDB(ctx context.Context, req *ImageUploadRequest, userID string) error {
+func (s *service) InsertImageDataToDB(ctx context.Context, req *ImageUploadRequest, userID string, imageID string) error {
 	query := "INSERT INTO images(id, user_id,filename) VALUES ($1, $2, $3)"
-	imageID := uuid.New()
 	_, err := s.db.ExecContext(ctx, query, imageID, userID, req.File.Filename)
 	return err
 }

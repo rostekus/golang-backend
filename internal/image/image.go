@@ -9,8 +9,8 @@ type Image struct {
 }
 
 type ImageMessage struct {
-	ImageName string `json:"image_name"`
-	UserID    string `json:"user_id"`
+	ImageID string `json:"image_id"`
+	UserID  string `json:"user_id"`
 }
 
 type ImageUploadRequest struct {
