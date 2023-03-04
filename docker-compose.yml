@@ -4,6 +4,7 @@ services:
       build: 
         context: .
         dockerfile: ./Dockerfile.user_service
+      restart: unless-stopped
       env_file:
         - .env
       volumes:
@@ -18,7 +19,7 @@ services:
       image: postgres
       volumes:
         - postgres-db:/var/lib/postgresql/data
-        - ./db/migrations/1_create_user_table.down.sql:/docker-entrypoint-initdb.d/create_tables.sql
+        - ./pkg/db/migrations/1_create_user_table.down.sql:/docker-entrypoint-initdb.d/create_tables.sql
       ports:
         - '5431:5432'
       
