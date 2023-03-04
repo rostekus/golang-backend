@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"mime/multipart"
 	"rostekus/golang-backend/pkg/db"
@@ -19,7 +20,7 @@ type storage interface {
 }
 
 type publisher interface {
-	Publish(message string) error
+	Publish(message []byte) error
 }
 
 type service struct {
@@ -52,17 +53,19 @@ func (s *service) UploadFileToMongoDB(ctx context.Context, req *ImageUploadReque
 		Message:   "File uploaded",
 		ImageID:   imageID.String(),
 	}
-	s.publisher.Publish(req.File.Filename)
 	return res, nil
 }
 
-func (s *service) PublishMessage(message string) error {
-	return s.publisher.Publish(message)
+func (s *service) PublishMessage(imageMessage ImageMessage) error {
+	body, err := json.Marshal(imageMessage)
+	if err != nil {
+		return err
+	}
+	return s.publisher.Publish(body)
 }
 
-func (s *service) InsertImageDataToDB(ctx context.Context, req *ImageUploadRequest, userID string) error {
+func (s *service) InsertImageDataToDB(ctx context.Context, req *ImageUploadRequest, userID string, imageID string) error {
 	query := "INSERT INTO images(id, user_id,filename) VALUES ($1, $2, $3)"
-	imageID := uuid.New()
 	_, err := s.db.ExecContext(ctx, query, imageID, userID, req.File.Filename)
 	return err
 }

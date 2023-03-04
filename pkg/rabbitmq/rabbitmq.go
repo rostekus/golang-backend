@@ -89,7 +89,7 @@ func (r *RabbitMQ) QueueDeclare(queueName string) {
 	r.queue = &queue
 }
 
-func (r *RabbitMQ) Publish(message string) error {
+func (r *RabbitMQ) Publish(message []byte) error {
 	err := r.ch.Publish(
 		"",           // exchange
 		r.queue.Name, // routing key
@@ -97,7 +97,7 @@ func (r *RabbitMQ) Publish(message string) error {
 		false,        // immediate
 		amqp.Publishing{
 			ContentType: "text/plain",
-			Body:        []byte(message),
+			Body:        message,
 		})
 	return err
 }
