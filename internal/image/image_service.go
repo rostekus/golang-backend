@@ -47,7 +47,7 @@ func (s *service) UploadFileToMongoDB(ctx context.Context, req *ImageUploadReque
 	}
 	defer file.Close()
 	imageID := uuid.New()
-	s.imageStorage.UploadFile(file, req.File.Filename)
+	s.imageStorage.UploadFile(file, imageID.String())
 	res := &ImageUploadResponse{
 		ImageName: req.File.Filename,
 		Message:   "File uploaded",
@@ -73,7 +73,7 @@ func (s *service) InsertImageDataToDB(ctx context.Context, req *ImageUploadReque
 func (s *service) DownloadFile(ctx context.Context, req *ImageDownloadRequest, userID string) (*ImageDownloadResponse, *bytes.Buffer, error) {
 	filename := req.ImageName
 
-	query := "SELECT id, filename FROM images WHERE filename = $1 AND user_id = $2"
+	query := "SELECT id, filename FROM images WHERE id = $1 AND user_id = $2"
 	row := s.db.QueryRowContext(ctx, query, filename, userID)
 
 	var id string
@@ -86,7 +86,7 @@ func (s *service) DownloadFile(ctx context.Context, req *ImageDownloadRequest, u
 		// Error occurred while querying the database.
 		return nil, nil, err
 	}
-	buf, err := s.imageStorage.DownloadFile(filename)
+	buf, err := s.imageStorage.DownloadFile(id)
 	resp := &ImageDownloadResponse{
 		ImageName: filename,
 		Message:   "File downloaded",
@@ -96,7 +96,7 @@ func (s *service) DownloadFile(ctx context.Context, req *ImageDownloadRequest, u
 
 func (s *service) GetImagesForUser(ctx context.Context, userID string) ([]*Image, error) {
 	var images []*Image
-	query := "SELECT filename FROM images WHERE user_id = $1"
+	query := "SELECT filename, id FROM images WHERE user_id = $1"
 	rows, err := s.db.QueryContext(ctx, query, userID)
 	if err != nil {
 		return nil, err
@@ -105,7 +105,7 @@ func (s *service) GetImagesForUser(ctx context.Context, userID string) ([]*Image
 
 	for rows.Next() {
 		var image Image
-		if err := rows.Scan(&image.Filename); err != nil {
+		if err := rows.Scan(&image.Filename, &image.ID); err != nil {
 			return nil, err
 		}
 		images = append(images, &image)

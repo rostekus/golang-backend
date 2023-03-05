@@ -39,6 +39,6 @@ func main() {
 	healthHandler := health.NewHandler()
 	router := router.NewImageServiceRouter(imageHandler, healthHandler)
 
-	srv := server.NewServer("23450", router.Router)
+	srv := server.NewServer("23451", router.Router)
 	srv.Run()
 }
