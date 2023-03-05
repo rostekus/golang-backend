@@ -3,6 +3,7 @@ package router
 import (
 	"rostekus/golang-backend/internal/health"
 	"rostekus/golang-backend/internal/image"
+	"rostekus/golang-backend/pkg/middleware"
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -23,7 +24,8 @@ func NewImageServiceRouter(imageHandler *image.Handler, healthHandler *health.Ha
 		},
 		MaxAge: 12 * time.Hour,
 	}))
-	router.POST("/upload", imageHandler.UploadFile)
-	router.POST("/download", imageHandler.DownloadFile)
+	router.POST("/upload", middleware.JWTAuth, imageHandler.UploadFile)
+	router.GET("/download", middleware.JWTAuth, imageHandler.DownloadFile)
+	router.GET("/images", middleware.JWTAuth, imageHandler.GetImagesForUser)
 	return &Router{Router: router}
 }
