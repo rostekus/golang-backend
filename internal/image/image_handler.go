@@ -1,6 +1,7 @@
 package image
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -76,6 +77,7 @@ func (h *Handler) GetImagesForUser(c *gin.Context) {
 	userID := c.MustGet("user_id").(string)
 	images, err := h.service.GetImagesForUser(c, userID)
 	if err != nil {
+		fmt.Print(err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
