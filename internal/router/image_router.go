@@ -24,8 +24,8 @@ func NewImageServiceRouter(imageHandler *image.Handler, healthHandler *health.Ha
 		},
 		MaxAge: 12 * time.Hour,
 	}))
-	router.POST("/upload", middleware.JWTAuth, imageHandler.UploadFile)
-	router.GET("/download", middleware.JWTAuth, imageHandler.DownloadFile)
+	router.POST("/images", middleware.JWTAuth, imageHandler.UploadFile)
+	router.GET("/images/:id", middleware.JWTAuth, imageHandler.DownloadFile)
 	router.GET("/images", middleware.JWTAuth, imageHandler.GetImagesForUser)
 	return &Router{Router: router}
 }

@@ -70,8 +70,7 @@ func (s *service) InsertImageDataToDB(ctx context.Context, req *ImageUploadReque
 	return err
 }
 
-func (s *service) DownloadFile(ctx context.Context, req *ImageDownloadRequest, userID string) (*ImageDownloadResponse, *bytes.Buffer, error) {
-	filename := req.ImageName
+func (s *service) DownloadFile(ctx context.Context, filename string, userID string) (*ImageDownloadResponse, *bytes.Buffer, error) {
 
 	query := "SELECT id, filename FROM images WHERE id = $1 AND user_id = $2"
 	row := s.db.QueryRowContext(ctx, query, filename, userID)
