@@ -3,13 +3,13 @@ package main
 import (
 	"fmt"
 	"log"
+	"rostekus/golang-backend/internal/health"
 	"rostekus/golang-backend/internal/image"
+	"rostekus/golang-backend/internal/router"
+	"rostekus/golang-backend/internal/server"
 	"rostekus/golang-backend/pkg/db"
-	"rostekus/golang-backend/pkg/middleware"
 	"rostekus/golang-backend/pkg/rabbitmq"
 	"rostekus/golang-backend/pkg/util"
-
-	"github.com/gin-gonic/gin"
 )
 
 func main() {
@@ -24,6 +24,7 @@ func main() {
 	rabbitmq := rabbitmq.NewRabbitMQ()
 	rabbitmq.CreateChannel()
 	rabbitmq.QueueDeclare("video_queue")
+	defer rabbitmq.Close()
 	log.Println("Connected to RabbitMQ")
 	postgres, err := db.NewPostgresDatabase()
 	if err != nil {
@@ -33,22 +34,11 @@ func main() {
 	defer postgres.Close()
 
 	rep := image.NewRepository(mongo, "golang")
-	srv := image.NewService(rep, rabbitmq, postgres.GetDB())
-	handler := image.NewHandler(srv)
-	router := gin.Default()
-	router.POST("/upload", middleware.JWTAuth, handler.UploadFile)
-	router.GET("/download", middleware.JWTAuth, handler.DownloadFile)
-	router.GET("/images", middleware.JWTAuth, handler.GetImagesForUser)
-	router.Run(":23451")
+	imageService := image.NewService(rep, rabbitmq, postgres.GetDB())
+	imageHandler := image.NewHandler(imageService)
+	healthHandler := health.NewHandler()
+	router := router.NewImageServiceRouter(imageHandler, healthHandler)
 
-	defer rabbitmq.Close()
-
-	// http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-	// 	w.WriteHeader(http.StatusOK)
-	// 	message := time.Now().String()
-	// 	rabbitmq.Publish(message)
-	// 	fmt.Fprint(w, "Message published")
-	// })
-	// http.ListenAndServe(":23451", nil)
-
+	srv := server.NewServer("23451", router.Router)
+	srv.Run()
 }

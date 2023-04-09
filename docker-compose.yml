@@ -1,7 +1,7 @@
 version: '3.8'
 services:
     user_service:
-      build: 
+      build:
         context: .
         dockerfile: ./Dockerfile.user_service
       restart: unless-stopped
@@ -9,25 +9,23 @@ services:
         - .env
       volumes:
       - .:/usr/src/app
-      ports:
-        - '8080:23450'
     postgres:
       container_name: postgresql
       environment:
+          - POSTGRES_DB=${POSTGRES_DB}
           - POSTGRES_USER=myusername
           - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       image: postgres
+      ports:
+        - '5432:5432'
       volumes:
         - postgres-db:/var/lib/postgresql/data
         - ./pkg/db/migrations/1_create_user_table.down.sql:/docker-entrypoint-initdb.d/create_tables.sql
-      ports:
-        - '5431:5432'
-      
+
     rabbitmq:
       container_name: rabbitmq
       image: rabbitmq:3.8.9-management
       ports:
-        - '5672:5672'
         - '15672:15672'
       environment:
         - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
@@ -41,7 +39,7 @@ services:
         retries: 5
 
     image_service:
-      build: 
+      build:
         context: .
         dockerfile: ./Dockerfile.image_service
       restart: unless-stopped
@@ -49,8 +47,6 @@ services:
         - .env
       volumes:
       - .:/usr/src/app
-      ports:
-        - '8081:23451'
 
     mongodb:
       image: mongo
@@ -63,9 +59,26 @@ services:
         - "27017:27017"
       volumes:
         - mongodb-db:/new:/data/db
+
+    haproxy:
+      build:
+        dockerfile: ./Dockerfile.haproxy
+      container_name: haproxy
+      ports:
+          - "80:80"
+    pgadmin:
+      container_name: pgadmin_golang
+      image: dpage/pgadmin4
+      restart: unless-stopped
+      environment:
+        PGADMIN_DEFAULT_EMAIL: admin@admin.com
+        PGADMIN_DEFAULT_PASSWORD: password
+      ports:
+        - "5050:80"
+
 volumes:
   postgres-db:
   rabbitmq-db:
   mongodb-db:
 
-  
+

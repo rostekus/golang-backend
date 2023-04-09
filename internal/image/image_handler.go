@@ -1,6 +1,7 @@
 package image
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -50,13 +51,9 @@ func (h *Handler) UploadFile(c *gin.Context) {
 }
 
 func (h *Handler) DownloadFile(c *gin.Context) {
-	var req ImageDownloadRequest
-	if err := c.BindQuery(&req); err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
+	imgID := c.Param("id")
 	userID := c.MustGet("user_id").(string)
-	resp, fileBuffer, err := h.service.DownloadFile(c, &req, userID)
+	resp, fileBuffer, err := h.service.DownloadFile(c, imgID, userID)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -76,6 +73,7 @@ func (h *Handler) GetImagesForUser(c *gin.Context) {
 	userID := c.MustGet("user_id").(string)
 	images, err := h.service.GetImagesForUser(c, userID)
 	if err != nil {
+		fmt.Print(err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

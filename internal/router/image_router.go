@@ -1,7 +1,6 @@
 package router
 
 import (
-	"net/http"
 	"rostekus/golang-backend/internal/health"
 	"rostekus/golang-backend/internal/image"
 	"rostekus/golang-backend/pkg/middleware"
@@ -25,14 +24,8 @@ func NewImageServiceRouter(imageHandler *image.Handler, healthHandler *health.Ha
 		},
 		MaxAge: 12 * time.Hour,
 	}))
-	public := router.Group("/")
-	public.POST("/upload", imageHandler.UploadFile)
-	public.POST("/download", imageHandler.DownloadFile)
-
-	private := router.Group("api/v1")
-	private.GET("/checkjwt", middleware.JWTAuth, func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"message": "Welcome to the private route!"})
-	})
-
+	router.POST("/images", middleware.JWTAuth, imageHandler.UploadFile)
+	router.GET("/images/:id", middleware.JWTAuth, imageHandler.DownloadFile)
+	router.GET("/images", middleware.JWTAuth, imageHandler.GetImagesForUser)
 	return &Router{Router: router}
 }
