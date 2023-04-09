@@ -1,5 +1,3 @@
-CREATE DATABASE golang;
-USE golang;
 CREATE TABLE
   users (
     id character varying(60) NOT NULL,
@@ -11,7 +9,7 @@ CREATE TABLE
 ALTER TABLE
   users
 ADD
-  CONSTRAINT users_pkey PRIMARY KEY (id)
+  CONSTRAINT users_pkey PRIMARY KEY (id);
 
 CREATE TABLE images (
   id character varying(60) NOT NULL,
