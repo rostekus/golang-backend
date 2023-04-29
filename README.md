@@ -23,6 +23,14 @@ This project can be run using Docker Compose.
 1. Navigate to the project root directory.
 2. Run `docker-compose up` to start the services.
 
+
+## Docs
+You can use postman to get the documatation
+
+<img width="600" alt="Screenshot 2023-04-29 at 22 12 16" src="https://user-images.githubusercontent.com/34031791/235322520-e2218dff-e634-4fc2-b4cb-b7f6cebc4bdb.png">
+
+
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
