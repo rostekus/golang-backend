@@ -1,0 +1,190 @@
+{
+	"info": {
+		"_postman_id": "115ae472-e089-45fc-916a-3b0682a01072",
+		"name": "Golang",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "20033428"
+	},
+	"item": [
+		{
+			"name": "upload",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImpvZSIsImVtYWlsIjoidGVzdEBnbWFpbC5jb20iLCJpZCI6IjBiMzhjMWU3LTk0NjgtNGJmMy1iOGQ4LTg4NTg3YTAwM2VkMCIsImV4cCI6MTY4MTUxMjgxM30.hVGXh0Y7S2s7FPohCoUQ0xsiC_2iFqxEJJzVdGkFKHg",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/home/rostyslav/Pictures/2023-04-06-160038_1920x1200_scrot.png"
+						}
+					]
+				},
+				"url": {
+					"raw": "localhost:80/api/v1/images",
+					"host": [
+						"localhost"
+					],
+					"port": "80",
+					"path": [
+						"api",
+						"v1",
+						"images"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "download",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3QxIiwiZW1haWwiOiJ0ZXN0QGdtYWlsLmNvbSIsImlkIjoiYzY5ZTZmMjYtMjFmMS00N2JmLWFlNGQtMTZiMzJkM2I3YjNjIiwiZXhwIjoxNjgxMDY1Mjg3fQ.gSlpfuj3nwRVkUauI7CM92yyE9bvq7dvJyp-EPU-CBE",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"image\": \"test.png\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:80/api/v1/images",
+					"host": [
+						"localhost"
+					],
+					"port": "80",
+					"path": [
+						"api",
+						"v1",
+						"images"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "sign up",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\" : \"joe\",\n\"email\" : \"test@gmail.com\",\n\"password\" : \"test123\"\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:80/api/v1/signup",
+					"host": [
+						"localhost"
+					],
+					"port": "80",
+					"path": [
+						"api",
+						"v1",
+						"signup"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\"email\" : \"test@gmail.com\",\n\"password\" : \"test123\"\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:80/api/v1/login",
+					"host": [
+						"localhost"
+					],
+					"port": "80",
+					"path": [
+						"api",
+						"v1",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get_image",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3QiLCJlbWFpbCI6InRlc3RAZ21haWwuY29tIiwiaWQiOiI0ZmZlOWZiNi00NTgyLTRlZGYtYWM3Zi1lMjc4NGRiNDQ3MmUiLCJleHAiOjE2Nzc3NTY5MjR9._cQQU0ZgBgjXDNQfS8vDcLmNnCdqkUU2UjOgHzEhGFA",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost/api/v1/images",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"api",
+						"v1",
+						"images"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
