@@ -7,6 +7,9 @@ This is a Go project that consists of two services. The first service is respons
 
 Before running the project, you will need to set up the config file `image_service_config.json` and set up environment variables, have a look at file `.env.template`
 
+## Architecture
+<img width="600" alt="Screenshot 2023-04-23 at 01 41 36" src="https://user-images.githubusercontent.com/34031791/235322269-77725c25-6e2d-4077-8a25-e5f0a53ecdf5.png">
+
 
 ## Installation
 
@@ -19,6 +22,14 @@ This project can be run using Docker Compose.
 
 1. Navigate to the project root directory.
 2. Run `docker-compose up` to start the services.
+
+
+## Docs
+You can use postman to get the documatation
+
+<img width="600" alt="Screenshot 2023-04-29 at 22 12 16" src="https://user-images.githubusercontent.com/34031791/235322520-e2218dff-e634-4fc2-b4cb-b7f6cebc4bdb.png">
+
+
 
 ## License
 
