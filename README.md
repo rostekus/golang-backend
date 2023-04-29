@@ -7,6 +7,9 @@ This is a Go project that consists of two services. The first service is respons
 
 Before running the project, you will need to set up the config file `image_service_config.json` and set up environment variables, have a look at file `.env.template`
 
+## Architecture
+<img width="600" alt="Screenshot 2023-04-23 at 01 41 36" src="https://user-images.githubusercontent.com/34031791/235322269-77725c25-6e2d-4077-8a25-e5f0a53ecdf5.png">
+
 
 ## Installation
 
